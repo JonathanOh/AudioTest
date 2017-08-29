@@ -90,10 +90,17 @@ class ViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDe
         view.addSubview(recordButton)
         view.addSubview(stopButton)
         
-        let playButtonCenterXAnchor = playButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0.0)
-        let playButtonTopAnchor = playButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 100.0)
-        let playButtonWidthAnchor = playButton.widthAnchor.constraint(equalToConstant: 200.0)
-        let playButtonHeightAnchor = playButton.heightAnchor.constraint(equalToConstant: 50.0)
+        // let thisConstraint = playButton(anchor: .x to:
+//        let playButtonCenterXAnchor = playButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0.0)
+//        let playButtonTopAnchor = playButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 100.0)
+//        let playButtonWidthAnchor = playButton.widthAnchor.constraint(equalToConstant: 200.0)
+//        let playButtonHeightAnchor = playButton.heightAnchor.constraint(equalToConstant: 50.0)
+        playButton.constrain(
+            anchorOne: .x, toAnchorOne: view.centerXAnchor, anchorOneConstant: nil,
+            anchorTwo: .top, toAnchorTwo: view.topAnchor, anchorTwoConstant: 100.0,
+            anchorThree: .width, toAnchorThree: view.centerXAnchor, anchorThreeConstant: 200.0,
+            anchorFour: .height, toAnchorFour: view.centerYAnchor, anchorFourConstant: 50.0
+        )
         
         let recordButtonCenterXAnchor = recordButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0.0)
         let recordButtonTopAnchor = recordButton.topAnchor.constraint(equalTo: playButton.bottomAnchor, constant: 10.0)
@@ -106,10 +113,10 @@ class ViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDe
         let stopButtonHeightAnchor = stopButton.heightAnchor.constraint(equalToConstant: 50.0)
 
         NSLayoutConstraint.activate([
-                playButtonCenterXAnchor,
-                playButtonTopAnchor,
-                playButtonWidthAnchor,
-                playButtonHeightAnchor,
+//                playButtonCenterXAnchor,
+//                playButtonTopAnchor,
+//                playButtonWidthAnchor,
+//                playButtonHeightAnchor,
                 recordButtonCenterXAnchor,
                 recordButtonTopAnchor,
                 recordButtonWidthAnchor,
@@ -138,5 +145,48 @@ class ViewController: UIViewController, AVAudioPlayerDelegate, AVAudioRecorderDe
         soundRecorder?.stop()
     }
 
+}
+
+extension UIView {
+    enum ConstraintAnchors {
+        case x
+        case y
+        case top
+        case bottom
+        case left
+        case right
+        case width
+        case height
+    }
+    func constrain(anchorOne: ConstraintAnchors, toAnchorOne: NSLayoutXAxisAnchor, anchorOneConstant: CGFloat?,
+                   anchorTwo: ConstraintAnchors, toAnchorTwo: NSLayoutYAxisAnchor, anchorTwoConstant: CGFloat?,
+                   anchorThree: ConstraintAnchors, toAnchorThree: NSLayoutXAxisAnchor, anchorThreeConstant: CGFloat?,
+                   anchorFour: ConstraintAnchors, toAnchorFour: NSLayoutYAxisAnchor, anchorFourConstant: CGFloat?) {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        let relatedAnchors = [toAnchorOne, toAnchorTwo, toAnchorThree, toAnchorFour]
+        let relatedConstants = [anchorOneConstant, anchorTwoConstant, anchorThreeConstant, anchorFourConstant]
+        var constraintsToActivate = [NSLayoutConstraint]()
+        for (index, anchor) in [anchorOne, anchorTwo, anchorThree,anchorFour].enumerated() {
+            switch anchor {
+            case .x:
+                constraintsToActivate.append(self.centerXAnchor.constraint(equalTo: relatedAnchors[index] as! NSLayoutAnchor<NSLayoutXAxisAnchor>, constant: relatedConstants[index] ?? 0.0))
+            case .y:
+                constraintsToActivate.append(self.centerYAnchor.constraint(equalTo: relatedAnchors[index] as! NSLayoutAnchor<NSLayoutYAxisAnchor>, constant: relatedConstants[index] ?? 0.0))
+            case .top:
+                constraintsToActivate.append(self.topAnchor.constraint(equalTo: relatedAnchors[index] as! NSLayoutAnchor<NSLayoutYAxisAnchor>, constant: relatedConstants[index] ?? 0.0))
+            case .bottom:
+                constraintsToActivate.append(self.bottomAnchor.constraint(equalTo: relatedAnchors[index] as! NSLayoutAnchor<NSLayoutYAxisAnchor>, constant: relatedConstants[index] ?? 0.0))
+            case .left:
+                constraintsToActivate.append(self.leftAnchor.constraint(equalTo: relatedAnchors[index] as! NSLayoutAnchor<NSLayoutXAxisAnchor>, constant: relatedConstants[index] ?? 0.0))
+            case .right:
+                constraintsToActivate.append(self.rightAnchor.constraint(equalTo: relatedAnchors[index] as! NSLayoutAnchor<NSLayoutXAxisAnchor>, constant: relatedConstants[index] ?? 0.0))
+            case .width:
+                constraintsToActivate.append(self.widthAnchor.constraint(equalToConstant: relatedConstants[index] ?? 0.0))
+            case .height:
+                constraintsToActivate.append(self.heightAnchor.constraint(equalToConstant: relatedConstants[index] ?? 0.0))
+            }
+        }
+        NSLayoutConstraint.activate(constraintsToActivate)
+    }
 }
 
